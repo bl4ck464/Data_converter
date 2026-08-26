@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ─── SEO & Meta ────────────────────────────────────────────── -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image to Data Converter — SVG, XML, JSON, YAML, CSV</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Image to Data Converter — Convert Images to SVG, XML, JSON, YAML, CSV" />
+    <meta name="description" content="Free online tool to convert images into structured data formats: SVG, XML, JSON, YAML, and CSV. Upload an image, adjust parameters, and export." />
+    <meta name="keywords" content="image to xml, image to json, image to svg, image to yaml, image to csv, convert image, image processing, quantize image, color palette, image regions, structured data" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://imagetodata.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://imagetodata.app/" />
+    <meta property="og:title" content="Image to Data Converter — SVG, XML, JSON, YAML, CSV" />
+    <meta property="og:description" content="Convert images to structured data formats: SVG vector graphics, XML, JSON, YAML, and CSV with color quantization and region detection." />
+    <meta property="og:image" content="https://imagetodata.app/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://imagetodata.app/" />
+    <meta name="twitter:title" content="Image to Data Converter — SVG, XML, JSON, YAML, CSV" />
+    <meta name="twitter:description" content="Free online image conversion tool. Upload any image and export as SVG, XML, JSON, YAML, or CSV with color palette and region data." />
+    <meta name="twitter:image" content="https://imagetodata.app/og-image.jpg" />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#f4ede6" />
+    <meta name="color-scheme" content="light" />
+
+    <!-- ─── JSON‑LD Structured Data ──────────────────────────────── -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "Image to Data Converter",
+            "description": "Convert images to structured data formats including SVG, XML, JSON, YAML, and CSV. Features color quantization, region detection, and pixel data export.",
+            "url": "https://imagetodata.app/",
+            "applicationCategory": "DesignApplication",
+            "operatingSystem": "All",
+            "browserRequirements": "Requires JavaScript",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            },
+            "author": {
+                "@type": "Person",
+                "name": "Image to Data Team"
+            }
+        }
+    </script>
+
+    <style>
+        /* ── reset & base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f4ede6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            color: #2d2a24;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            max-width: 1280px;
+            width: 100%;
+            background: #f4ede6;
+            border-radius: 48px;
+            padding: 48px 52px 52px;
+        }
+
+        /* ── header ── */
+        .header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin-bottom: 4px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: #2d2a24;
+        }
+
+        .header h1 span {
+            font-weight: 300;
+            color: #8f8478;
+            font-size: 18px;
+            margin-left: 8px;
+        }
+
+        /* ── grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            .app {
+                padding: 32px 24px 36px;
+                border-radius: 36px;
+            }
+        }
+
+        /* ── panels ── */
+        .panel {
+            background: #fcf9f5;
+            border-radius: 32px;
+            padding: 28px 30px 30px;
+            border: 1px solid #eae3db;
+        }
+
+        .panel-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #8f8478;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-label .line {
+            flex: 1;
+            height: 1px;
+            background: #eae3db;
+        }
+
+        /* ── unified drop / preview ── */
+        .drop-preview {
+            border: 2px dashed #dad1c7;
+            border-radius: 24px;
+            padding: 0;
+            transition: all 0.2s;
+            background: #fcf9f5;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .drop-preview:hover {
+            border-color: #b8ab9e;
+            background: #faf6f0;
+        }
+
+        .drop-preview.dragover {
+            border-color: #7f6e5d;
+            background: #f4ede6;
+        }
+
+        .drop-preview .placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        .drop-preview .placeholder svg {
+            width: 48px;
+            height: 48px;
+            fill: none;
+            stroke: #b8ab9e;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: block;
+            margin: 0 auto 8px;
+        }
+
+        .drop-preview .placeholder p {
+            font-size: 15px;
+            color: #3d352e;
+            font-weight: 400;
+        }
+
+        .drop-preview .placeholder .hint {
+            font-size: 13px;
+            color: #a89888;
+            margin-top: 4px;
+            font-weight: 350;
+        }
+
+        .drop-preview .preview {
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .drop-preview .preview img {
+            max-width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .drop-preview .preview .badge {
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            background: rgba(45, 42, 36, 0.7);
+            backdrop-filter: blur(4px);
+            color: #f4ede6;
+            font-size: 12px;
+            padding: 3px 16px;
+            border-radius: 30px;
+            font-weight: 350;
+            pointer-events: none;
+        }
+
+        .drop-preview .preview .replace-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(45, 42, 36, 0.8);
+            color: #fcf9f5;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            font-weight: 400;
+            backdrop-filter: blur(4px);
+        }
+
+        .drop-preview:hover .preview .replace-hint {
+            opacity: 1;
+        }
+
+        .drop-preview.has-image .placeholder {
+            display: none;
+        }
+
+        .drop-preview.has-image .preview {
+            display: flex;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* ── controls ── */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 20px;
+            margin: 20px 0 6px;
+        }
+
+        .ctrl {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .ctrl label {
+            font-size: 12px;
+            font-weight: 450;
+            color: #5a4d3e;
+            letter-spacing: 0.01em;
+        }
+
+        .ctrl .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ctrl input[type="range"] {
+            width: 100%;
+            accent-color: #b8ab9e;
+            background: transparent;
+            height: 4px;
+            cursor: pointer;
+        }
+
+        .ctrl .val {
+            font-size: 13px;
+            font-weight: 400;
+            color: #3d352e;
+            background: #f4ede6;
+            padding: 0 12px;
+            border-radius: 8px;
+            min-width: 34px;
+            text-align: center;
+            line-height: 28px;
+        }
+
+        .ctrl .toggles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 18px;
+            padding-top: 4px;
+        }
+
+        .ctrl .toggles label {
+            font-weight: 350;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #4a3d32;
+        }
+
+        .ctrl .toggles input[type="checkbox"] {
+            accent-color: #b8ab9e;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #dad1c7;
+        }
+
+        .ctrl select {
+            padding: 6px 14px;
+            border-radius: 12px;
+            border: 1px solid #dad1c7;
+            background: #fcf9f5;
+            font-size: 13px;
+            color: #2d2a24;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.15s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238f8478'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px 6px;
+            padding-right: 32px;
+            cursor: pointer;
+        }
+
+        .ctrl select:focus {
+            border-color: #b8ab9e;
+        }
+
+        /* ── buttons ── */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 9px 24px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 450;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            background: #ede6de;
+            color: #3d352e;
+            letter-spacing: 0.01em;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: #2d2a24;
+            color: #fcf9f5;
+        }
+
+        .btn-primary:hover {
+            background: #1f1c17;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: #ddd2c6;
+            color: #2d2a24;
+        }
+
+        .btn-success:hover {
+            background: #cec1b3;
+        }
+
+        .btn-success:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #dad1c7;
+        }
+
+        .btn-outline:hover {
+            background: #f4ede6;
+            border-color: #b8ab9e;
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 12px;
+        }
+
+        /* ── stats ── */
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 18px;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #6a5d4e;
+        }
+
+        .stats span {
+            background: #f4ede6;
+            padding: 2px 16px;
+            border-radius: 30px;
+        }
+
+        .stats .highlight {
+            background: #ede6de;
+            color: #3d352e;
+            font-weight: 450;
+        }
+
+        /* ── right panel: output ── */
+        .output-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        /* svg preview */
+        .svg-result {
+            background: #fcf9f5;
+            border-radius: 24px;
+            border: 1px solid #eae3db;
+            padding: 16px 18px 18px;
+        }
+
+        .svg-result .svg-title {
+            font-size: 12px;
+            font-weight: 450;
+            color: #6a5d4e;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .svg-result .svg-title .badge {
+            font-weight: 350;
+            background: #f4ede6;
+            font-size: 11px;
+            padding: 0 14px;
+            border-radius: 30px;
+            color: #5a4d3e;
+        }
+
+        .svg-result .svg-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .svg-result svg {
+            border-radius: 16px;
+            background: #fcf9f5;
+            max-width: 100%;
+            border: 1px solid #eae3db;
+            display: block;
+        }
+
+        .svg-result .swatches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .svg-result .swatch {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #3d352e;
+            background: #f4ede6;
+            padding: 4px 12px 4px 6px;
+            border-radius: 30px;
+            border: 1px solid #eae3db;
+        }
+
+        .svg-result .swatch .dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+        }
+
+        .svg-result .swatch .pct {
+            color: #8f8478;
+            font-size: 10px;
+        }
+
+        /* ── format tabs ── */
+        .format-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .format-tabs .tab {
+            padding: 5px 18px;
+            border: 1px solid #dad1c7;
+            border-radius: 30px;
+            background: #fcf9f5;
+            font-size: 12px;
+            font-weight: 400;
+            color: #5a4d3e;
+            cursor: pointer;
+            transition: all 0.12s;
+            font-family: inherit;
+        }
+
+        .format-tabs .tab:hover {
+            background: #f4ede6;
+        }
+
+        .format-tabs .tab.active {
+            background: #2d2a24;
+            color: #fcf9f5;
+            border-color: #2d2a24;
+        }
+
+        /* ── output box ── */
+        .output-box {
+            flex: 1;
+            background: #fcf9f5;
+            border-radius: 20px;
+            padding: 18px 20px;
+            border: 1px solid #eae3db;
+            max-height: 280px;
+            overflow: auto;
+            font-family: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #2d2a24;
+            white-space: pre-wrap;
+            word-break: break-all;
+            position: relative;
+            min-height: 140px;
+        }
+
+        .output-box .empty {
+            color: #a89888;
+            font-style: italic;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .output-box .copy-btn {
+            position: sticky;
+            float: right;
+            background: rgba(45, 42, 36, 0.05);
+            border: none;
+            color: #5a4d3e;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: 0.12s;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 4px;
+        }
+
+        .output-box .copy-btn:hover {
+            background: rgba(45, 42, 36, 0.12);
+        }
+
+        .output-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        .output-box::-webkit-scrollbar-track {
+            background: #f4ede6;
+            border-radius: 4px;
+        }
+        .output-box::-webkit-scrollbar-thumb {
+            background: #dad1c7;
+            border-radius: 4px;
+        }
+
+        /* ── status ── */
+        .status {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #5a4d3e;
+            padding: 8px 18px;
+            background: #f4ede6;
+            border-radius: 40px;
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 350;
+        }
+
+        .status .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #dad1c7;
+            border-top-color: #8f8478;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status .ok {
+            color: #4f6b4f;
+            font-weight: 400;
+        }
+
+        /* ── responsive ── */
+        @media (max-width: 600px) {
+            .app {
+                padding: 24px 14px 28px;
+                border-radius: 32px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .header h1 span {
+                font-size: 15px;
+                display: block;
+                margin-left: 0;
+            }
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            .panel {
+                padding: 20px 16px 22px;
+            }
+            .actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            .drop-preview {
+                min-height: 160px;
+            }
+            .svg-result .svg-body {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================ -->
+    <!-- HTML                                                          -->
+    <!-- ============================================================ -->
+    <div class="app">
+
+        <!-- header -->
+        <div class="header">
+
+        <!-- grid -->
+        <div class="grid">
+
+            <!-- LEFT: input -->
+            <div class="panel">
+                <div class="panel-label"><span>input</span><span class="line"></span></div>
+
+                <!-- unified drop + preview -->
+                <div class="drop-preview" id="dropPreview">
+                    <!-- placeholder (visible when no image) -->
+                    <div class="placeholder" id="placeholder">
+                        <svg viewBox="0 0 48 48"><path d="M24 8v16M16 16l8-8 8 8"/><rect x="8" y="20" width="32" height="20" rx="2"/><path d="M8 28h32"/></svg>
+                        <p><strong>drop an image</strong> or click to browse</p>
+                        <div class="hint">png · jpg · webp · bmp · gif · svg · ico · tiff</div>
+                    </div>
+
+                    <!-- preview (hidden until image loaded) -->
+                    <div class="preview" id="previewContainer">
+                        <img id="previewImg" src="" alt="preview" />
+                        <div class="badge" id="fileBadge"></div>
+                        <div class="replace-hint">drop to replace</div>
+                    </div>
+
+                    <input type="file" id="fileInput" accept="image/*" />
+                </div>
+
+                <!-- controls -->
+                <div class="controls">
+                    <div class="ctrl">
+                        <label>color count</label>
+                        <div class="row">
+                            <input type="range" id="colorCount" min="2" max="48" value="10" />
+                            <span class="val" id="colorCountVal">10</span>
+                        </div>
+                    </div>
+                    <div class="ctrl">
+                        <label>minimum region</label>
+                        <div class="row">
+                            <input type="range" id="minRegion" min="2" max="160" value="18" />
+                            <span class="val" id="minRegionVal">18</span>
+                        </div>
+                    </div>
+                    <div class="ctrl">
+                        <label>downsample</label>
+                        <div class="row">
+                            <input type="range" id="downsample" min="1" max="12" value="3" />
+                            <span class="val" id="downsampleVal">3</span>
+                        </div>
+                    </div>
+                    <div class="ctrl">
+                        <label>export format</label>
+                        <select id="exportFormat">
+                            <option value="svg">SVG</option>
+                            <option value="xml">XML</option>
+                            <option value="json" selected>JSON</option>
+                            <option value="yaml">YAML</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                    <div class="ctrl" style="grid-column:1/-1;">
+                        <div class="toggles">
+                            <label><input type="checkbox" id="includePixels" checked /> include pixel data</label>
+                            <label><input type="checkbox" id="prettyPrint" checked /> pretty print</label>
+                            <label><input type="checkbox" id="showRegions" checked /> region outlines</label>
+                            <label><input type="checkbox" id="includeHistogram" /> histogram</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- actions -->
+                <div class="actions">
+                    <button class="btn btn-primary" id="convertBtn">convert</button>
+                    <button class="btn btn-success" id="saveBtn" disabled>save</button>
+                    <button class="btn btn-outline" id="clearBtn">clear</button>
+                    <button class="btn btn-outline btn-sm" id="analyzeBtn" disabled>analyze</button>
+                </div>
+
+                <!-- stats -->
+                <div class="stats" id="statsBar">
+                    <span id="statColors">colors —</span>
+                    <span id="statRegions">regions —</span>
+                    <span id="statPixels">pixels —</span>
+                    <span id="statSize">size —</span>
+                </div>
+            </div>
+
+            <!-- RIGHT: output -->
+            <div class="panel" style="display:flex;flex-direction:column;">
+                <div class="panel-label"><span>output</span><span class="line"></span><span style="font-weight:350;color:#8f8478;text-transform:none;letter-spacing:0;" id="outputSize">0 bytes</span></div>
+
+                <div class="output-area">
+
+                    <!-- SVG preview -->
+                    <div class="svg-result" id="svgResult" style="display:none;">
+                        <div class="svg-title">
+                            <span>vector preview</span>
+                            <span class="badge" id="svgInfo">—</span>
+                        </div>
+                        <div class="svg-body">
+                            <div id="svgContainer"></div>
+                            <div class="swatches" id="swatchContainer"></div>
+                        </div>
+                    </div>
+
+                    <!-- format tabs -->
+                    <div class="format-tabs" id="formatTabs">
+                        <button class="tab active" data-format="json">JSON</button>
+                        <button class="tab" data-format="svg">SVG</button>
+                        <button class="tab" data-format="xml">XML</button>
+                        <button class="tab" data-format="yaml">YAML</button>
+                        <button class="tab" data-format="csv">CSV</button>
+                    </div>
+
+                    <!-- text output -->
+                    <div class="output-box" id="outputBox">
+                        <span class="empty">no data yet — load an image and convert</span>
+                    </div>
+
+                </div>
+
+                <!-- status -->
+                <div class="status" id="statusBar">
+                    <span>ready — drop an image to start</span>
+                </div>
+            </div>
+
+        </div><!-- /grid -->
+    </div><!-- /app -->
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT                                                    -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── DOM refs ──────────────────────────────────────────────
+            const $ = id => document.getElementById(id);
+            const dropPreview = $('dropPreview');
+            const fileInput = $('fileInput');
+            const previewImg = $('previewImg');
+            const placeholder = $('placeholder');
+            const previewContainer = $('previewContainer');
+            const fileBadge = $('fileBadge');
+
+            const colorSlider = $('colorCount');
+            const colorVal = $('colorCountVal');
+            const regionSlider = $('minRegion');
+            const regionVal = $('minRegionVal');
+            const dsSlider = $('downsample');
+            const dsVal = $('downsampleVal');
+            const exportFormat = $('exportFormat');
+            const includePixels = $('includePixels');
+            const prettyPrint = $('prettyPrint');
+            const showRegions = $('showRegions');
+            const includeHist = $('includeHistogram');
+            const convertBtn = $('convertBtn');
+            const saveBtn = $('saveBtn');
+            const clearBtn = $('clearBtn');
+            const analyzeBtn = $('analyzeBtn');
+            const outputBox = $('outputBox');
+            const outputSize = $('outputSize');
+            const statColors = $('statColors');
+            const statRegions = $('statRegions');
+            const statPixels = $('statPixels');
+            const statSize = $('statSize');
+            const statusBar = $('statusBar');
+            const svgResult = $('svgResult');
+            const svgContainer = $('svgContainer');
+            const swatchContainer = $('swatchContainer');
+            const svgInfo = $('svgInfo');
+            const formatTabs = $('formatTabs');
+
+            // ─── state ──────────────────────────────────────────────────
+            let imageData = null; // { img, width, height, name, size, pixels, dataUrl }
+            let processed = null; // { palette, regions, labels, width, height, pixelRows, histogram, meta }
+            let outputs = {}; // { svg, xml, json, yaml, csv }
+            let activeFormat = 'json';
+
+            // ─── slider displays ──────────────────────────────────────
+            colorSlider.addEventListener('input', () => { colorVal.textContent = colorSlider.value; });
+            regionSlider.addEventListener('input', () => { regionVal.textContent = regionSlider.value; });
+            dsSlider.addEventListener('input', () => { dsVal.textContent = dsSlider.value; });
+
+            // ─── auto‑configure settings based on image ──────────────
+
+            function autoConfigure(width, height) {
+                const area = width * height;
+                // color count: more colors for larger images
+                let colors = 10;
+                if (area < 50000) colors = 6;
+                else if (area < 150000) colors = 10;
+                else if (area < 500000) colors = 14;
+                else colors = 18;
+                colorSlider.value = colors;
+                colorVal.textContent = colors;
+
+                // min region: proportional to sqrt(area)
+                let minReg = Math.max(4, Math.round(Math.sqrt(area) / 20));
+                minReg = Math.min(120, minReg);
+                regionSlider.value = minReg;
+                regionVal.textContent = minReg;
+
+                // downsample: based on width
+                let ds = 3;
+                if (width > 2500) ds = 6;
+                else if (width > 1500) ds = 4;
+                else if (width > 800) ds = 3;
+                else ds = 2;
+                dsSlider.value = ds;
+                dsVal.textContent = ds;
+
+                // set includePixels to true
+                includePixels.checked = true;
+                // pretty print true
+                prettyPrint.checked = true;
+                // show regions true
+                showRegions.checked = true;
+                // histogram false by default
+                includeHist.checked = false;
+
+                // status update
+                setStatus(`auto‑configured: ${colors} colors · min region ${minReg} · downsample ${ds}`, 'ok');
+            }
+
+            // ─── file loading ──────────────────────────────────────────
+
+            function loadFile(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    setStatus('please select a valid image', 'error');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataUrl = e.target.result;
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        const idata = ctx.getImageData(0, 0, img.width, img.height);
+                        const pixels = new Uint8Array(idata.data);
+
+                        imageData = {
+                            img: img,
+                            width: img.width,
+                            height: img.height,
+                            name: file.name,
+                            size: file.size,
+                            pixels: pixels,
+                            dataUrl: dataUrl,
+                        };
+
+                        // show preview
+                        previewImg.src = dataUrl;
+                        dropPreview.classList.add('has-image');
+                        fileBadge.textContent = `${img.width} × ${img.height} · ${file.name}`;
+                        statSize.textContent = `size ${(file.size/1024).toFixed(1)} KB`;
+
+                        // auto‑configure
+                        autoConfigure(img.width, img.height);
+
+                        // enable buttons
+                        convertBtn.disabled = false;
+                        analyzeBtn.disabled = false;
+                        saveBtn.disabled = true;
+                        processed = null;
+                        outputs = {};
+                        svgResult.style.display = 'none';
+                        swatchContainer.innerHTML = '';
+                        outputBox.innerHTML = `<span class="empty">ready — click «convert»</span>`;
+                        outputSize.textContent = '0 bytes';
+                        resetStats();
+
+                        setStatus(`loaded ${file.name}  (${img.width}×${img.height})`, 'ok');
+                    };
+                    img.onerror = () => setStatus('failed to decode image', 'error');
+                    img.src = dataUrl;
+                };
+                reader.onerror = () => setStatus('failed to read file', 'error');
+                reader.readAsDataURL(file);
+            }
+
+            function resetStats() {
+                statColors.textContent = 'colors —';
+                statRegions.textContent = 'regions —';
+                statPixels.textContent = 'pixels —';
+            }
+
+            // ─── unified drop zone ────────────────────────────────────
+
+            // click on drop-preview triggers file input
+            dropPreview.addEventListener('click', (e) => {
+                // ignore if click is on replace-hint or badge? but we want to open file dialog
+                fileInput.click();
+            });
+
+            // drag & drop
+            dropPreview.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropPreview.classList.add('dragover');
+            });
+            dropPreview.addEventListener('dragleave', () => {
+                dropPreview.classList.remove('dragover');
+            });
+            dropPreview.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropPreview.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    loadFile(e.dataTransfer.files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length) {
+                    loadFile(fileInput.files[0]);
+                }
+                fileInput.value = '';
+            });
+
+            // ─── clear ──────────────────────────────────────────────────
+
+            clearBtn.addEventListener('click', () => {
+                imageData = null;
+                processed = null;
+                outputs = {};
+                dropPreview.classList.remove('has-image');
+                previewImg.src = '';
+                svgResult.style.display = 'none';
+                swatchContainer.innerHTML = '';
+                svgContainer.innerHTML = '';
+                outputBox.innerHTML = `<span class="empty">no data — load an image</span>`;
+                outputSize.textContent = '0 bytes';
+                resetStats();
+                statSize.textContent = 'size —';
+                convertBtn.disabled = true;
+                saveBtn.disabled = true;
+                analyzeBtn.disabled = true;
+                setStatus('ready — drop an image to start', '');
+            });
+
+            // ─── status ─────────────────────────────────────────────────
+
+            function setStatus(msg, type) {
+                statusBar.innerHTML = `<span>${msg}</span>`;
+                statusBar.style.background = type === 'ok' ? '#ede6de' : type === 'error' ? '#f4e6de' : '#f4ede6';
+            }
+
+            function setBusy(msg) {
+                statusBar.innerHTML = `<span class="spinner"></span><span>${msg}</span>`;
+                statusBar.style.background = '#f4ede6';
+            }
+
+            // ─── core algorithms ──────────────────────────────────────
+
+            function samplePixels(pixels, w, h, max) {
+                const total = w * h;
+                const step = Math.max(1, Math.floor(total / max));
+                const out = [];
+                for (let i = 0; i < total; i += step) {
+                    const idx = i * 4;
+                    out.push([pixels[idx], pixels[idx + 1], pixels[idx + 2]]);
+                }
+                return out;
+            }
+
+            function kmeans(data, k, iter) {
+                if (!data.length) return Array.from({ length: k }, () => [128, 128, 128]);
+                const dim = data[0].length;
+                const centers = [];
+                const first = data[Math.floor(Math.random() * data.length)];
+                centers.push([...first]);
+                for (let c = 1; c < k; c++) {
+                    let best = -1,
+                        bestDist = -1;
+                    for (let i = 0; i < data.length; i++) {
+                        let min = Infinity;
+                        for (const cent of centers) {
+                            let d = 0;
+                            for (let j = 0; j < dim; j++) { const x = data[i][j] - cent[j];
+                                d += x * x; }
+                            if (d < min) min = d;
+                        }
+                        if (min > bestDist) { bestDist = min;
+                            best = i; }
+                    }
+                    centers.push([...data[best]]);
+                }
+                const assign = new Uint16Array(data.length);
+                for (let it = 0; it < iter; it++) {
+                    let changed = false;
+                    for (let i = 0; i < data.length; i++) {
+                        let best = 0,
+                            bestDist = Infinity;
+                        for (let c = 0; c < centers.length; c++) {
+                            let d = 0;
+                            for (let j = 0; j < dim; j++) { const x = data[i][j] - centers[c][j];
+                                d += x * x; }
+                            if (d < bestDist) { bestDist = d;
+                                best = c; }
+                        }
+                        if (assign[i] !== best) { assign[i] = best;
+                            changed = true; }
+                    }
+                    if (!changed) break;
+                    const sums = Array.from({ length: k }, () => new Float64Array(dim));
+                    const counts = new Uint32Array(k);
+                    for (let i = 0; i < data.length; i++) {
+                        const c = assign[i];
+                        counts[c]++;
+                        for (let j = 0; j < dim; j++) sums[c][j] += data[i][j];
+                    }
+                    for (let c = 0; c < k; c++) {
+                        if (counts[c] > 0) {
+                            for (let j = 0; j < dim; j++) centers[c][j] = sums[c][j] / counts[c];
+                        }
+                    }
+                }
+                return centers;
+            }
+
+            function buildHistogram(pixels, w, h) {
+                const hist = new Array(256).fill(0);
+                for (let i = 0; i < w * h; i++) {
+                    const idx = i * 4;
+                    const g = Math.round(0.299 * pixels[idx] + 0.587 * pixels[idx + 1] + 0.114 * pixels[idx + 2]);
+                    hist[g]++;
+                }
+                return hist;
+            }
+
+            function processImage(data, numColors, minRegion, downsample, inclPixels) {
+                const { pixels, width, height, name, size } = data;
+                const k = Math.max(2, Math.min(48, Math.round(numColors)));
+                const sampled = samplePixels(pixels, width, height, Math.min(40000, width * height));
+                const centers = kmeans(sampled, k, 12);
+
+                const labels = new Uint16Array(width * height);
+                const counts = new Uint32Array(k);
+                for (let i = 0; i < width * height; i++) {
+                    const idx = i * 4;
+                    const r = pixels[idx],
+                        g = pixels[idx + 1],
+                        b = pixels[idx + 2];
+                    let best = 0,
+                        bestDist = Infinity;
+                    for (let c = 0; c < centers.length; c++) {
+                        const dr = r - centers[c][0],
+                            dg = g - centers[c][1],
+                            db = b - centers[c][2];
+                        const d = dr * dr + dg * dg + db * db;
+                        if (d < bestDist) { bestDist = d;
+                            best = c; }
+                    }
+                    labels[i] = best;
+                    counts[best]++;
+                }
+
+                const palette = centers.map((c, i) => ({
+                    id: i,
+                    r: Math.round(c[0]),
+                    g: Math.round(c[1]),
+                    b: Math.round(c[2]),
+                    count: counts[i] || 0,
+                    hex: '#' + [c[0], c[1], c[2]].map(v => Math.round(v).toString(16).padStart(2, '0')).join('')
+                }));
+
+                // connected components
+                const visited = new Uint8Array(width * height);
+                const regions = [];
+                const minPx = Math.max(1, Math.round(minRegion));
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        const idx = y * width + x;
+                        if (visited[idx]) continue;
+                        const label = labels[idx];
+                        const queue = [idx];
+                        visited[idx] = 1;
+                        let minX = x,
+                            maxX = x,
+                            minY = y,
+                            maxY = y,
+                            count = 0;
+                        while (queue.length) {
+                            const cur = queue.pop();
+                            const cx = cur % width,
+                                cy = Math.floor(cur / width);
+                            count++;
+                            if (cx < minX) minX = cx;
+                            if (cx > maxX) maxX = cx;
+                            if (cy < minY) minY = cy;
+                            if (cy > maxY) maxY = cy;
+                            const nbrs = [
+                                [cx - 1, cy],
+                                [cx + 1, cy],
+                                [cx, cy - 1],
+                                [cx, cy + 1]
+                            ];
+                            for (const [nx, ny] of nbrs) {
+                                if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+                                const nidx = ny * width + nx;
+                                if (!visited[nidx] && labels[nidx] === label) {
+                                    visited[nidx] = 1;
+                                    queue.push(nidx);
+                                }
+                            }
+                        }
+                        if (count >= minPx) {
+                            regions.push({
+                                id: regions.length,
+                                colorId: label,
+                                x: minX,
+                                y: minY,
+                                w: maxX - minX + 1,
+                                h: maxY - minY + 1,
+                                count: count,
+                            });
+                        }
+                    }
+                }
+                regions.sort((a, b) => b.count - a.count);
+
+                // pixel rows
+                let pixelRows = null;
+                if (inclPixels) {
+                    const ds = Math.max(1, Math.round(downsample));
+                    pixelRows = [];
+                    for (let y = 0; y < height; y += ds) {
+                        const row = [];
+                        for (let x = 0; x < width; x += ds) {
+                            const idx = y * width + x;
+                            row.push(labels[idx] || 0);
+                        }
+                        pixelRows.push(row);
+                    }
+                }
+
+                const hist = buildHistogram(pixels, width, height);
+
+                return {
+                    palette,
+                    regions,
+                    labels,
+                    width,
+                    height,
+                    pixelRows,
+                    histogram: hist,
+                    meta: { filename: name || 'image', format: 'image', fileSize: size || 0 },
+                };
+            }
+
+            // ─── formatters ────────────────────────────────────────────
+
+            function toSVG(processed, showOutlines) {
+                const { palette, regions, width, height } = processed;
+                const maxDim = 500;
+                const scale = Math.min(1, maxDim / Math.max(width, height));
+                const sw = Math.round(width * scale);
+                const sh = Math.round(height * scale);
+                let svg =
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="${sw}" height="${sh}" viewBox="0 0 ${sw} ${sh}" style="background:#fcf9f5;">\n`;
+                // background
+                svg += `  <rect width="${sw}" height="${sh}" fill="#fcf9f5"/>\n`;
+                // regions
+                for (const r of regions) {
+                    const color = palette[r.colorId] || { r: 200, g: 200, b: 200 };
+                    const fill = `rgb(${color.r},${color.g},${color.b})`;
+                    const rx = Math.round(r.x * scale);
+                    const ry = Math.round(r.y * scale);
+                    const rw = Math.max(1, Math.round(r.w * scale));
+                    const rh = Math.max(1, Math.round(r.h * scale));
+                    const stroke = showOutlines ? 'stroke="rgba(255,255,255,0.5)" stroke-width="0.8"' : '';
+                    svg += `  <rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="${fill}" ${stroke}/>\n`;
+                }
+                svg += `</svg>`;
+                return svg;
+            }
+
+            function toXML(p, pretty, inclHist) {
+                const { palette, regions, width, height, meta, pixelRows, histogram } = p;
+                const doc = document.implementation.createDocument(null, 'image', null);
+                const root = doc.documentElement;
+                const m = doc.createElement('metadata');
+                [
+                    ['filename', meta.filename],
+                    ['width', width],
+                    ['height', height],
+                    ['colorCount', palette.length],
+                    ['regionCount', regions.length]
+                ].forEach(([k, v]) => { const el = doc.createElement(k);
+                    el.textContent = v;
+                    m.appendChild(el); });
+                root.appendChild(m);
+
+                const pal = doc.createElement('palette');
+                for (const c of palette) {
+                    const el = doc.createElement('color');
+                    el.setAttribute('id', c.id);
+                    el.setAttribute('r', c.r);
+                    el.setAttribute('g', c.g);
+                    el.setAttribute('b', c.b);
+                    el.setAttribute('hex', c.hex);
+                    el.setAttribute('count', c.count);
+                    pal.appendChild(el);
+                }
+                root.appendChild(pal);
+
+                const reg = doc.createElement('regions');
+                for (const r of regions) {
+                    const el = doc.createElement('region');
+                    el.setAttribute('id', r.id);
+                    el.setAttribute('color', r.colorId);
+                    el.setAttribute('x', r.x);
+                    el.setAttribute('y', r.y);
+                    el.setAttribute('w', r.w);
+                    el.setAttribute('h', r.h);
+                    el.setAttribute('count', r.count);
+                    reg.appendChild(el);
+                }
+                root.appendChild(reg);
+
+                if (inclHist) {
+                    const h = doc.createElement('histogram');
+                    for (let i = 0; i < histogram.length; i++) {
+                        if (histogram[i] > 0) {
+                            const bin = doc.createElement('bin');
+                            bin.setAttribute('v', i);
+                            bin.setAttribute('c', histogram[i]);
+                            h.appendChild(bin);
+                        }
+                    }
+                    root.appendChild(h);
+                }
+
+                if (pixelRows) {
+                    const px = doc.createElement('pixels');
+                    for (let y = 0; y < pixelRows.length; y++) {
+                        const row = doc.createElement('row');
+                        row.setAttribute('y', y * (Math.round(parseInt(dsSlider.value)) || 3));
+                        row.textContent = pixelRows[y].join(',');
+                        px.appendChild(row);
+                    }
+                    root.appendChild(px);
+                }
+
+                const s = new XMLSerializer();
+                let xml = s.serializeToString(doc);
+                if (pretty) xml = prettyPrintXML(xml);
+                return xml;
+            }
+
+            function prettyPrintXML(xml) {
+                let out = '',
+                    indent = 0;
+                const parts = xml.split(/>\s*</);
+                for (let i = 0; i < parts.length; i++) {
+                    let line = parts[i];
+                    if (i < parts.length - 1) line += '>';
+                    else line += '';
+                    if (i > 0) line = '<' + line;
+                    if (line.match(/^<\/\w/)) indent--;
+                    out += '  '.repeat(Math.max(0, indent)) + line + '\n';
+                    if (line.match(/^<\w[^>]*[^\/]>$/) && !line.match(/^<\?xml/) && !line.match(/^<!/)) indent++;
+                }
+                return out.trim();
+            }
+
+            function toJSON(p, pretty, inclHist) {
+                const { palette, regions, width, height, meta, pixelRows, histogram } = p;
+                const obj = {
+                    meta: { filename: meta.filename, width, height, colors: palette.length, regions: regions.length },
+                    palette: palette.map(c => ({ id: c.id, r: c.r, g: c.g, b: c.b, hex: c.hex, count: c.count })),
+                    regions: regions.map(r => ({ id: r.id, color: r.colorId, x: r.x, y: r.y, w: r.w, h: r.h, count: r
+                            .count })),
+                };
+                if (inclHist) {
+                    obj.histogram = histogram.map((c, v) => ({ value: v, count: c })).filter(d => d.count > 0);
+                }
+                if (pixelRows) {
+                    obj.pixels = { downsample: parseInt(dsSlider.value) || 3, rows: pixelRows };
+                }
+                return JSON.stringify(obj, null, pretty ? 2 : 0);
+            }
+
+            function toYAML(p, inclHist) {
+                const { palette, regions, width, height, meta, pixelRows, histogram } = p;
+                let y = '';
+                y += `metadata:\n  filename: ${meta.filename}\n  width: ${width}\n  height: ${height}\n  colors: ${palette.length}\n  regions: ${regions.length}\n`;
+                y += `\npalette:\n`;
+                for (const c of palette) {
+                    y +=
+                        `  - id: ${c.id}\n    r: ${c.r}\n    g: ${c.g}\n    b: ${c.b}\n    hex: ${c.hex}\n    count: ${c.count}\n`;
+                }
+                y += `\nregions:\n`;
+                for (const r of regions) {
+                    y +=
+                        `  - id: ${r.id}\n    color: ${r.colorId}\n    x: ${r.x}\n    y: ${r.y}\n    w: ${r.w}\n    h: ${r.h}\n    count: ${r.count}\n`;
+                }
+                if (inclHist) {
+                    y += `\nhistogram:\n`;
+                    for (let i = 0; i < histogram.length; i++) {
+                        if (histogram[i] > 0) y += `  - value: ${i}\n    count: ${histogram[i]}\n`;
+                    }
+                }
+                if (pixelRows) {
+                    y += `\npixels:\n  downsample: ${parseInt(dsSlider.value) || 3}\n  rows:\n`;
+                    for (const row of pixelRows) {
+                        y += `    - [${row.join(', ')}]\n`;
+                    }
+                }
+                return y;
+            }
+
+            function toCSV(p, inclHist) {
+                const { palette, regions, width, height, meta, histogram } = p;
+                const lines = [];
+                lines.push(`# metadata`);
+                lines.push(`filename,${meta.filename}`);
+                lines.push(`width,${width}`);
+                lines.push(`height,${height}`);
+                lines.push(`colors,${palette.length}`);
+                lines.push(`regions,${regions.length}`);
+                lines.push(``);
+                lines.push(`# palette`);
+                lines.push(`id,r,g,b,hex,count`);
+                for (const c of palette) {
+                    lines.push(`${c.id},${c.r},${c.g},${c.b},${c.hex},${c.count}`);
+                }
+                lines.push(``);
+                lines.push(`# regions`);
+                lines.push(`id,color,x,y,w,h,count`);
+                for (const r of regions) {
+                    lines.push(`${r.id},${r.colorId},${r.x},${r.y},${r.w},${r.h},${r.count}`);
+                }
+                if (inclHist) {
+                    lines.push(``);
+                    lines.push(`# histogram`);
+                    lines.push(`value,count`);
+                    for (let i = 0; i < histogram.length; i++) {
+                        if (histogram[i] > 0) lines.push(`${i},${histogram[i]}`);
+                    }
+                }
+                return lines.join('\n');
+            }
+
+            // ─── generate all ──────────────────────────────────────────
+
+            function generateAll(p) {
+                const inclPix = includePixels.checked;
+                const inclHist = includeHist.checked;
+                const outlines = showRegions.checked;
+                const pretty = prettyPrint.checked;
+                return {
+                    svg: toSVG(p, outlines),
+                    xml: toXML(p, pretty, inclHist),
+                    json: toJSON(p, pretty, inclHist),
+                    yaml: toYAML(p, inclHist),
+                    csv: toCSV(p, inclHist),
+                };
+            }
+
+            function getActiveOutput() { return outputs[activeFormat] || ''; }
+
+            // ─── render visual ─────────────────────────────────────────
+
+            function renderVisual(p) {
+                const { palette, regions, width, height } = p;
+                const svgStr = toSVG(p, showRegions.checked);
+                svgContainer.innerHTML = svgStr;
+                svgResult.style.display = 'block';
+
+                // swatches
+                swatchContainer.innerHTML = '';
+                const sorted = [...palette].sort((a, b) => b.count - a.count);
+                for (const c of sorted) {
+                    const el = document.createElement('div');
+                    el.className = 'swatch';
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    dot.style.backgroundColor = c.hex;
+                    const label = document.createElement('span');
+                    label.textContent = c.hex;
+                    const pct = document.createElement('span');
+                    pct.className = 'pct';
+                    pct.textContent = `${((c.count/(width*height))*100).toFixed(1)}%`;
+                    el.appendChild(dot);
+                    el.appendChild(label);
+                    el.appendChild(pct);
+                    swatchContainer.appendChild(el);
+                }
+
+                svgInfo.textContent = `${palette.length} colors · ${regions.length} regions · ${width}×${height}`;
+            }
+
+            function updateOutputDisplay() {
+                const content = getActiveOutput();
+                if (!content) {
+                    outputBox.innerHTML = `<span class="empty">no data for this format</span>`;
+                    outputSize.textContent = '0 bytes';
+                    return;
+                }
+                const escaped = content
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                outputBox.innerHTML =
+                `<button class="copy-btn" id="copyBtn">copy</button><code style="font-family:inherit;">${escaped}</code>`;
+                const copyBtn = outputBox.querySelector('#copyBtn');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(content).then(() => {
+                            copyBtn.textContent = 'copied';
+                            setTimeout(() => copyBtn.textContent = 'copy', 1200);
+                        }).catch(() => {});
+                    });
+                }
+                const bytes = new Blob([content]).size;
+                outputSize.textContent = bytes < 1024 ? `${bytes} bytes` : `${(bytes/1024).toFixed(1)} KB`;
+            }
+
+            // ─── convert ───────────────────────────────────────────────
+
+            convertBtn.addEventListener('click', () => {
+                if (!imageData) { setStatus('no image loaded', 'error'); return; }
+                setBusy('processing …');
+
+                setTimeout(() => {
+                    try {
+                        const nc = parseInt(colorSlider.value);
+                        const mr = parseInt(regionSlider.value);
+                        const ds = parseInt(dsSlider.value);
+                        const inclPix = includePixels.checked;
+
+                        const result = processImage(imageData, nc, mr, ds, inclPix);
+                        processed = result;
+
+                        const all = generateAll(result);
+                        outputs = all;
+
+                        // stats
+                        statColors.textContent = `colors ${result.palette.length}`;
+                        statRegions.textContent = `regions ${result.regions.length}`;
+                        statPixels.textContent = `pixels ${(result.width * result.height).toLocaleString()}`;
+
+                        // visual
+                        renderVisual(result);
+
+                        // set active format
+                        activeFormat = exportFormat.value;
+                        document.querySelectorAll('.tab').forEach(t => {
+                            t.classList.toggle('active', t.dataset.format === activeFormat);
+                        });
+                        updateOutputDisplay();
+
+                        saveBtn.disabled = false;
+                        setStatus(`converted — ${result.regions.length} regions, ${result.palette.length} colors`,
+                            'ok');
+                    } catch (err) {
+                        setStatus(`error: ${err.message}`, 'error');
+                        console.error(err);
+                    }
+                }, 40);
+            });
+
+            // ─── tabs ──────────────────────────────────────────────────
+
+            formatTabs.addEventListener('click', (e) => {
+                const btn = e.target.closest('.tab');
+                if (!btn) return;
+                const fmt = btn.dataset.format;
+                if (!fmt) return;
+                activeFormat = fmt;
+                exportFormat.value = fmt;
+                document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === btn));
+                if (outputs[fmt]) {
+                    updateOutputDisplay();
+                } else {
+                    outputBox.innerHTML = `<span class="empty">no data for ${fmt} yet</span>`;
+                    outputSize.textContent = '0 bytes';
+                }
+            });
+
+            exportFormat.addEventListener('change', () => {
+                const fmt = exportFormat.value;
+                activeFormat = fmt;
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.toggle('active', t.dataset.format === fmt);
+                });
+                if (outputs[fmt]) {
+                    updateOutputDisplay();
+                } else {
+                    outputBox.innerHTML = `<span class="empty">no data for ${fmt} yet</span>`;
+                    outputSize.textContent = '0 bytes';
+                }
+            });
+
+            // ─── save ──────────────────────────────────────────────────
+
+            saveBtn.addEventListener('click', () => {
+                const content = getActiveOutput();
+                if (!content) { setStatus('no data to save', 'error'); return; }
+                const extMap = { svg: 'svg', xml: 'xml', json: 'json', yaml: 'yaml', csv: 'csv' };
+                const ext = extMap[activeFormat] || 'txt';
+                const mimeMap = { svg: 'image/svg+xml', xml: 'application/xml', json: 'application/json',
+                    yaml: 'text/yaml', csv: 'text/csv' };
+                const blob = new Blob([content], { type: (mimeMap[activeFormat] || 'text/plain') + ';charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const base = imageData?.name?.replace(/\.[^.]+$/, '') || 'image';
+                a.download = `${base}.${ext}`;
+                a.href = url;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                setStatus(`saved as ${base}.${ext}`, 'ok');
+            });
+
+            // ─── analyze ───────────────────────────────────────────────
+
+            analyzeBtn.addEventListener('click', () => {
+                if (!imageData) return;
+                const { width, height, pixels, name } = imageData;
+                let rSum = 0,
+                    gSum = 0,
+                    bSum = 0;
+                let minR = 255,
+                    maxR = 0,
+                    minG = 255,
+                    maxG = 0,
+                    minB = 255,
+                    maxB = 0;
+                const total = width * height;
+                for (let i = 0; i < total; i++) {
+                    const idx = i * 4;
+                    const r = pixels[idx],
+                        g = pixels[idx + 1],
+                        b = pixels[idx + 2];
+                    rSum += r;
+                    gSum += g;
+                    bSum += b;
+                    if (r < minR) minR = r;
+                    if (r > maxR) maxR = r;
+                    if (g < minG) minG = g;
+                    if (g > maxG) maxG = g;
+                    if (b < minB) minB = b;
+                    if (b > maxB) maxB = b;
+                }
+                const avgR = (rSum / total).toFixed(1),
+                    avgG = (gSum / total).toFixed(1),
+                    avgB = (bSum / total).toFixed(1);
+                const bright = ((parseFloat(avgR) + parseFloat(avgG) + parseFloat(avgB)) / 3).toFixed(1);
+                setStatus(
+                    `analysis: ${name} · avg rgb (${avgR}, ${avgG}, ${avgB}) · brightness ${bright} · R ${minR}–${maxR} · G ${minG}–${maxG} · B ${minB}–${maxB}`,
+                    'ok');
+            });
+
+            // ─── region toggle re-render ──────────────────────────────
+
+            showRegions.addEventListener('change', () => {
+                if (processed) {
+                    renderVisual(processed);
+                    // re-generate SVG output with new outline setting
+                    const svgStr = toSVG(processed, showRegions.checked);
+                    outputs.svg = svgStr;
+                    if (activeFormat === 'svg') updateOutputDisplay();
+                }
+            });
+
+            // ─── paste support ─────────────────────────────────────────
+
+            document.addEventListener('paste', (e) => {
+                const items = e.clipboardData?.items;
+                if (!items) return;
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        loadFile(item.getAsFile());
+                        break;
+                    }
+                }
+            });
+
+            // ─── init ──────────────────────────────────────────────────
+
+            setStatus('ready — drop an image to start', '');
+            convertBtn.disabled = true;
+            saveBtn.disabled = true;
+            analyzeBtn.disabled = true;
+            svgResult.style.display = 'none';
+
+            console.log('image → data converter loaded (unified preview, auto-config)');
+        })();
+    </script>
+
+</body>
+</html>
